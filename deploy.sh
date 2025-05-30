@@ -14,4 +14,4 @@ git pull \
 	--exclude=hibernate.properties \
 	--rsync-path="sudo rsync" \
 && popd \
-&& sudo systemctl restart onedev-lifecapital
+&& sudo systemctl restart onedev-lifecapital && chown -R www-data:www-data $target_path
