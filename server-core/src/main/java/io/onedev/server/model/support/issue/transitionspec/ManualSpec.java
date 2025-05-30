@@ -1,5 +1,7 @@
 package io.onedev.server.model.support.issue.transitionspec;
 
+import static io.onedev.server.security.SecurityUtils.canManageIssues;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import io.onedev.server.model.Membership;
 import io.onedev.server.model.Project;
 import io.onedev.server.model.Role;
 import io.onedev.server.model.User;
+import io.onedev.server.model.UserAuthorization;
 import io.onedev.server.model.support.administration.GlobalIssueSetting;
 import io.onedev.server.model.support.issue.field.spec.FieldSpec;
 import io.onedev.server.model.support.issue.field.spec.GroupChoiceField;
@@ -201,42 +204,43 @@ public class ManualSpec extends TransitionSpec {
 	public boolean isAuthorized(Issue issue) {
 		User user = SecurityUtils.getUser();
 		Project project = issue.getProject();
+
 		if (user != null) {
+
 			if (!getAuthorizedRoles().isEmpty()) {
-				if (SecurityUtils.canManageIssues(project)) {
-					return true;
-				} else {
-					for (String roleName: getAuthorizedRoles()) {
-						String fieldName = getFieldName(roleName);
-						if (fieldName != null) {
-							for (IssueField field: issue.getFields()) {
-								if (field.getName().equals(fieldName)) {
-									if (field.getType().equals(InputSpec.USER)) {
-										if (user.getName().equals(field.getValue()))
+				if(!SecurityUtils.canManageIssues(project))
+					return false;
+
+				for (String roleName: getAuthorizedRoles()) {
+					String fieldName = getFieldName(roleName);
+					if (fieldName != null) {
+						for (IssueField field: issue.getFields()) {
+							if (field.getName().equals(fieldName)) {
+								if (field.getType().equals(InputSpec.USER)) {
+									if (user.getName().equals(field.getValue()))
+										return true;
+								} else if (field.getType().equals(InputSpec.GROUP)) {
+									for (Membership membership: user.getMemberships()) {
+										if (membership.getGroup().getName().equals(field.getValue()))
 											return true;
-									} else if (field.getType().equals(InputSpec.GROUP)) {
-										for (Membership membership: user.getMemberships()) {
-											if (membership.getGroup().getName().equals(field.getValue()))
-												return true;
-										}
 									}
 								}
 							}
-						} else if (roleName.equals(ROLE_SUBMITTER)) {
-							if (user.equals(issue.getSubmitter()))
+						}
+					} else if (roleName.equals(ROLE_SUBMITTER)) {
+						if (user.getName().equals(issue.getSubmitter().getName()))
+							return true;
+					} else {
+						Role role = OneDev.getInstance(RoleManager.class).find(roleName);
+						if (role != null) {
+							if (SecurityUtils.isAssignedRole(project, role)) 
 								return true;
 						} else {
-							Role role = OneDev.getInstance(RoleManager.class).find(roleName);
-							if (role != null) {
-								if (SecurityUtils.isAssignedRole(project, role)) 
-									return true;
-							} else {
-								logger.error("Undefined role: " + roleName);
-							}
+							logger.error("Undefined role: " + roleName);
 						}
 					}
-					return false;
 				}
+				return false;
 			} else {
 				return true;
 			}
