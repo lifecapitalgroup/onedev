@@ -223,19 +223,13 @@ public abstract class ProjectPage extends LayoutPage implements ProjectAware {
 					Lists.newArrayList(NewPullRequestPage.class, PullRequestDetailPage.class, InvalidPullRequestPage.class)));
 		}
 		if (getProject().isIssueManagement()) {
-			List<SidebarMenuItem> issueMenuItems = new ArrayList<>();
-			
-			issueMenuItems.add(new SidebarMenuItem.Page(null, _T("List"), 
+			menuItems.add(new SidebarMenuItem.Page(null, _T("Boards"), 
+					IssueBoardsPage.class, IssueBoardsPage.paramsOf(getProject())));
+			menuItems.add(new SidebarMenuItem.Page(null, _T("List"), 
 					ProjectIssueListPage.class, ProjectIssueListPage.paramsOf(getProject(), 0), 
 					Lists.newArrayList(NewIssuePage.class, IssueDetailPage.class)));
-			issueMenuItems.add(new SidebarMenuItem.Page(null, _T("Boards"), 
-					IssueBoardsPage.class, IssueBoardsPage.paramsOf(getProject())));
-			issueMenuItems.add(new SidebarMenuItem.Page(null, _T("Iterations"), 
-					IterationListPage.class, IterationListPage.paramsOf(getProject(), false, null), 
-					Lists.newArrayList(NewIterationPage.class, IterationDetailPage.class, IterationEditPage.class)));
 			if (getProject().isTimeTracking() && isSubscriptionActive() && SecurityUtils.canAccessTimeTracking(getProject())) 
-				issueMenuItems.add(OneDev.getInstance(TimeTrackingManager.class).newTimesheetsMenuItem(getProject()));
-			menuItems.add(new SidebarMenuItem.SubMenu("bug", _T("Issues"), issueMenuItems));
+				menuItems.add(OneDev.getInstance(TimeTrackingManager.class).newTimesheetsMenuItem(getProject()));
 		}
 
 		if (getProject().isCodeManagement()) {
