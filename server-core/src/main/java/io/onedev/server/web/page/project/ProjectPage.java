@@ -198,30 +198,6 @@ public abstract class ProjectPage extends LayoutPage implements ProjectAware {
 		
 		List<SidebarMenuItem> menuItems = new ArrayList<>();
 		
-		if (getProject().isCodeManagement() && SecurityUtils.canReadCode(getProject())) {
-			List<SidebarMenuItem> codeMenuItems = new ArrayList<>();
-	
-			codeMenuItems.add(new SidebarMenuItem.Page(null, _T("Files"), 
-					ProjectBlobPage.class, ProjectBlobPage.paramsOf(getProject())));
-			codeMenuItems.add(new SidebarMenuItem.Page(null, _T("Commits"), 
-					ProjectCommitsPage.class, ProjectCommitsPage.paramsOf(getProject(), null), 
-					Lists.newArrayList(CommitDetailPage.class)));
-			codeMenuItems.add(new SidebarMenuItem.Page(null, _T("Branches"), 
-					ProjectBranchesPage.class, ProjectBranchesPage.paramsOf(getProject())));
-			codeMenuItems.add(new SidebarMenuItem.Page(null, _T("Tags"), 
-					ProjectTagsPage.class, ProjectTagsPage.paramsOf(getProject())));
-			codeMenuItems.add(new SidebarMenuItem.Page(null, _T("Code Comments"), 
-					ProjectCodeCommentsPage.class, ProjectCodeCommentsPage.paramsOf(getProject(), 0)));
-			codeMenuItems.add(new SidebarMenuItem.Page(null, _T("Code Compare"), 
-					RevisionComparePage.class, RevisionComparePage.paramsOf(getProject())));
-			
-			menuItems.add(new SidebarMenuItem.SubMenu("git", _T("Code"), codeMenuItems));
-		}
-		if (getProject().isCodeManagement() && SecurityUtils.canReadCode(getProject())) {
-			menuItems.add(new SidebarMenuItem.Page("pull-request", _T("Pull Requests"),
-					ProjectPullRequestsPage.class, ProjectPullRequestsPage.paramsOf(getProject(), 0),
-					Lists.newArrayList(NewPullRequestPage.class, PullRequestDetailPage.class, InvalidPullRequestPage.class)));
-		}
 		if (getProject().isIssueManagement()) {
 			menuItems.add(new SidebarMenuItem.Page(null, _T("Boards"), 
 					IssueBoardsPage.class, IssueBoardsPage.paramsOf(getProject())));
@@ -232,26 +208,17 @@ public abstract class ProjectPage extends LayoutPage implements ProjectAware {
 				menuItems.add(OneDev.getInstance(TimeTrackingManager.class).newTimesheetsMenuItem(getProject()));
 		}
 
+		if (getProject().isCodeManagement() && SecurityUtils.canReadCode(getProject()))
+			menuItems.add(new SidebarMenuItem.Page(null, _T("Files"), 
+					ProjectBlobPage.class, ProjectBlobPage.paramsOf(getProject())));
+
 		if (getProject().isCodeManagement()) {
 			menuItems.add(new SidebarMenuItem.Page("play-circle", _T("Builds"),
 					ProjectBuildsPage.class, ProjectBuildsPage.paramsOf(getProject(), 0),
 					Lists.newArrayList(BuildDetailPage.class, InvalidBuildPage.class)));
 		}
 		
-		if (getProject().isPackManagement() && SecurityUtils.canReadPack(getProject())) {
-			menuItems.add(new SidebarMenuItem.Page("package", _T("Packages"),
-					ProjectPacksPage.class, ProjectPacksPage.paramsOf(getProject(), 0),
-					Lists.newArrayList(PackDetailPage.class)));
-		}
-		
 		List<SidebarMenuItem> statsMenuItems = new ArrayList<>();
-		
-		if (getProject().isCodeManagement() && SecurityUtils.canReadCode(getProject())) {
-			statsMenuItems.add(new SidebarMenuItem.Page(null, _T("Code"), 
-					CodeContribsPage.class, CodeContribsPage.paramsOf(getProject()), 
-					Lists.newArrayList(SourceLinesPage.class)));
-		}
-		
 		List<StatisticsMenuContribution> contributions = new ArrayList<>(OneDev.getExtensions(StatisticsMenuContribution.class));
 		contributions.sort(Comparator.comparing(StatisticsMenuContribution::getOrder));
 		
