@@ -1,7 +1,5 @@
 package io.onedev.server.model.support.issue.transitionspec;
 
-import static io.onedev.server.security.SecurityUtils.canManageIssues;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +23,6 @@ import io.onedev.server.model.Membership;
 import io.onedev.server.model.Project;
 import io.onedev.server.model.Role;
 import io.onedev.server.model.User;
-import io.onedev.server.model.UserAuthorization;
 import io.onedev.server.model.support.administration.GlobalIssueSetting;
 import io.onedev.server.model.support.issue.field.spec.FieldSpec;
 import io.onedev.server.model.support.issue.field.spec.GroupChoiceField;
