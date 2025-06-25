@@ -2,6 +2,7 @@ package io.onedev.server.web.component.issue.side;
 
 import static io.onedev.server.security.SecurityUtils.canAccessIssue;
 import static io.onedev.server.security.SecurityUtils.canManageIssues;
+import static io.onedev.server.security.SecurityUtils.getUser;
 import static io.onedev.server.util.EmailAddressUtils.describe;
 
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public abstract class IssueSidePanel extends Panel {
 			
 		});
 		
-		if (SecurityUtils.canManageIssues(getProject())) 
+		if (SecurityUtils.isAdministrator(getUser().asSubject())) 
 			addOrReplace(newDeleteLink("delete"));		
 		else 
 			addOrReplace(new WebMarkupContainer("delete").setVisible(false));

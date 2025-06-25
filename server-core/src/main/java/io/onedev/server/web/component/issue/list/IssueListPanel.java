@@ -1439,70 +1439,73 @@ public abstract class IssueListPanel extends Panel {
 
 					});
 
-					menuItems.add(new MenuItem() {
+					if (SecurityUtils.isAdministrator()) {
+						menuItems.add(new MenuItem() {
 
-						@Override
-						public String getLabel() {
-							return "Delete All Queried Issues";
-						}
+							@Override
+							public String getLabel() {
+								return "Delete All Queried Issues";
+							}
 
-						@Override
-						public WebMarkupContainer newLink(String id) {
-							return new AjaxLink<Void>(id) {
+							@Override
+							public WebMarkupContainer newLink(String id) {
+								return new AjaxLink<Void>(id) {
 
-								@SuppressWarnings("unchecked")
-								@Override
-								public void onClick(AjaxRequestTarget target) {
-									dropdown.close();
+									@SuppressWarnings("unchecked")
+									@Override
+									public void onClick(AjaxRequestTarget target) {
+										dropdown.close();
 
-									new ConfirmModalPanel(target) {
+										new ConfirmModalPanel(target) {
 
-										@Override
-										protected void onConfirm(AjaxRequestTarget target) {
-											Collection<Issue> issues = new ArrayList<>();
-											for (Iterator<Issue> it = (Iterator<Issue>) dataProvider.iterator(0, issuesTable.getItemCount()); it.hasNext(); )
-												issues.add(it.next());
-											OneDev.getInstance(IssueManager.class).delete(issues, getProject());
-											dataProvider.detach();
-											selectionColumn.getSelections().clear();
-											target.add(countLabel);
-											target.add(body);
-											onBatchDeleted(target);
-										}
+											@Override
+											protected void onConfirm(AjaxRequestTarget target) {
+												Collection<Issue> issues = new ArrayList<>();
+												for (Iterator<Issue> it = (Iterator<Issue>) dataProvider.iterator(0,
+														issuesTable.getItemCount()); it.hasNext();)
+													issues.add(it.next());
+												OneDev.getInstance(IssueManager.class).delete(issues, getProject());
+												dataProvider.detach();
+												selectionColumn.getSelections().clear();
+												target.add(countLabel);
+												target.add(body);
+												onBatchDeleted(target);
+											}
 
-										@Override
-										protected String getConfirmMessage() {
-											return "Type <code>yes</code> below to delete all queried issues";
-										}
+											@Override
+											protected String getConfirmMessage() {
+												return "Type <code>yes</code> below to delete all queried issues";
+											}
 
-										@Override
-										protected String getConfirmInput() {
-											return "yes";
-										}
+											@Override
+											protected String getConfirmInput() {
+												return "yes";
+											}
 
-									};
-								}
-
-								@Override
-								protected void onConfigure() {
-									super.onConfigure();
-									setEnabled(issuesTable.getItemCount() != 0);
-								}
-
-								@Override
-								protected void onComponentTag(ComponentTag tag) {
-									super.onComponentTag(tag);
-									configure();
-									if (!isEnabled()) {
-										tag.put("disabled", "disabled");
-										tag.put("title", "No issues to delete");
+										};
 									}
-								}
 
-							};
-						}
+									@Override
+									protected void onConfigure() {
+										super.onConfigure();
+										setEnabled(issuesTable.getItemCount() != 0);
+									}
 
-					});
+									@Override
+									protected void onComponentTag(ComponentTag tag) {
+										super.onComponentTag(tag);
+										configure();
+										if (!isEnabled()) {
+											tag.put("disabled", "disabled");
+											tag.put("title", "No issues to delete");
+										}
+									}
+
+								};
+							}
+
+						});
+					}
 				}
 
 				if (!SecurityUtils.getAuthUser().isServiceAccount()) {

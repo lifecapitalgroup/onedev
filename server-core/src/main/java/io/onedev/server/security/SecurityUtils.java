@@ -284,10 +284,14 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
 	 * @return
 	 */
 	public static boolean canOpenTerminal(Build build) {
+		if(!isAdministrator())
+			return false;
+
 		var subject = getSubject();
 		var user = getAuthUser(subject);
 		if (user == null)
 			return false;
+
 		var project = build.getProject();
 		if (SecurityUtils.canManageProject(subject, project) 
 				|| build.getRequest() != null && build.getRequest().getSubmitter().equals(user)) {
@@ -303,14 +307,20 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
 	}
 	
 	public static boolean canEditIssueField(Project project, String fieldName) {
+		if (!canManageIssues(project))
+			return false;
 		return getSubject().isPermitted(new ProjectPermission(project, new EditIssueField(Sets.newHashSet(fieldName))));
 	}
 	
 	public static boolean canEditIssueLink(Project project, LinkSpec link) {
+		if (!canManageIssues(project))
+			return false;
 		return getSubject().isPermitted(new ProjectPermission(project, new EditIssueLink(link)));
 	}
 	
 	public static boolean canScheduleIssues(Project project) {
+		if (!canManageIssues(project))
+			return false;
 		return getSubject().isPermitted(new ProjectPermission(project, new ScheduleIssues()));
 	}
 
@@ -511,24 +521,36 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
 	}
 	
 	public static boolean canModifyOrDelete(IssueComment comment) {
+		if(!SecurityUtils.isAdministrator())
+			return false;
+
 		var subject = getSubject();
 		return canManageIssues(subject, comment.getIssue().getProject())
 				|| comment.getUser().equals(getAuthUser(subject));
 	}
 
 	public static boolean canModifyOrDelete(IssueWork work) {
+		if(!SecurityUtils.isAdministrator())
+			return false;
+
 		var subject = getSubject();
 		return canManageIssues(subject, work.getIssue().getProject())
 				|| work.getUser().equals(getAuthUser(subject));
 	}
 
 	public static boolean canModifyOrDelete(IssueVote vote) {
+		if(!SecurityUtils.isAdministrator())
+			return false;
+
 		var subject = getSubject();
 		return canManageIssues(subject, vote.getIssue().getProject())
 				|| vote.getUser().equals(getAuthUser(subject));
 	}
 
 	public static boolean canModifyOrDelete(IssueWatch watch) {
+		if(!SecurityUtils.isAdministrator())
+			return false;
+
 		var subject = getSubject();
 		return canManageIssues(subject, watch.getIssue().getProject())
 				|| watch.getUser().equals(getAuthUser(subject));
@@ -555,8 +577,7 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
 	
 	public static boolean canModifyIssue(Issue issue) {
 		var subject = getSubject();
-		return canManageIssues(subject, issue.getProject())
-				|| issue.getSubmitter().equals(getAuthUser(subject));
+		return canManageIssues(subject, issue.getProject());
 	}
 	
 	public static void bindAsSystem() {
