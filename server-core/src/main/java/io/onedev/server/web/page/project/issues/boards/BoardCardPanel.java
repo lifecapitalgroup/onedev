@@ -1,7 +1,6 @@
 package io.onedev.server.web.page.project.issues.boards;
 
 import static io.onedev.server.security.SecurityUtils.canAccessIssue;
-import static io.onedev.server.security.SecurityUtils.canManageIssues;
 import static io.onedev.server.security.SecurityUtils.getAuthUser;
 import static java.util.stream.Collectors.toList;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -339,28 +337,24 @@ public abstract class BoardCardPanel extends GenericPanel<Issue> {
 			
 			@Override
 			protected void respond(AjaxRequestTarget target) {
-				if (canManageIssues(getProject())) {
-					Long issueId = RequestCycle.get().getRequest().getPostParameters()
-							.getParameterValue("issue").toLong();
-					Issue issue = OneDev.getInstance(IssueManager.class).load(issueId);
-					Hibernate.initialize(issue.getProject());
-					Project parent = issue.getProject().getParent();
-					while (parent != null) {
-						Hibernate.initialize(parent);
-						parent = parent.getParent();
-					}
-					Hibernate.initialize(issue.getFields());
-					Hibernate.initialize(issue.getSubmitter());
-					Hibernate.initialize(issue.getComments());
-					Hibernate.initialize(issue.getTargetLinks());
-					Hibernate.initialize(issue.getSourceLinks());
-					Hibernate.initialize(issue.getMentions());
-					for (Iteration iteration : issue.getIterations())
-						Hibernate.initialize(iteration);
-					send(getPage(), Broadcast.BREADTH, new IssueDragging(target, issue));
-				} else {
-					Session.get().warn("Issue management permission required to move issues");
+				Long issueId = RequestCycle.get().getRequest().getPostParameters()
+						.getParameterValue("issue").toLong();
+				Issue issue = OneDev.getInstance(IssueManager.class).load(issueId);
+				Hibernate.initialize(issue.getProject());
+				Project parent = issue.getProject().getParent();
+				while (parent != null) {
+					Hibernate.initialize(parent);
+					parent = parent.getParent();
 				}
+				Hibernate.initialize(issue.getFields());
+				Hibernate.initialize(issue.getSubmitter());
+				Hibernate.initialize(issue.getComments());
+				Hibernate.initialize(issue.getTargetLinks());
+				Hibernate.initialize(issue.getSourceLinks());
+				Hibernate.initialize(issue.getMentions());
+				for (Iteration iteration : issue.getIterations())
+					Hibernate.initialize(iteration);
+				send(getPage(), Broadcast.BREADTH, new IssueDragging(target, issue));
 			}
 			
 		});

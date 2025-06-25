@@ -115,7 +115,7 @@ public class ManualSpec extends TransitionSpec {
 	public boolean canTransit(Issue issue, @Nullable String state) {
 		if ((state == null || getToStates().isEmpty() || getToStates().contains(state)) 
 				&& (getFromStates().isEmpty() || getFromStates().contains(issue.getState())) 
-				&& isAuthorized(issue)) {
+				&& isAuthorized(issue, true)) {
 			io.onedev.server.search.entity.issue.IssueQuery parsedQuery = io.onedev.server.search.entity.issue.IssueQuery.parse(issue.getProject(),
 					getIssueQuery(), new IssueQueryParseOption().enableAll(true), true);
 			return parsedQuery.matches(issue);
@@ -197,16 +197,21 @@ public class ManualSpec extends TransitionSpec {
 			usage.add("authorized roles");
 		return usage;
 	}
-	
+
 	public boolean isAuthorized(Issue issue) {
+		return isAuthorized(issue, false);
+	}
+	
+	public boolean isAuthorized(Issue issue, boolean skipIssueManagementCheck) {
 		User user = SecurityUtils.getUser();
 		Project project = issue.getProject();
 
 		if (user != null) {
 
 			if (!getAuthorizedRoles().isEmpty()) {
-				if(!SecurityUtils.canManageIssues(project))
-					return false;
+				if(!skipIssueManagementCheck)
+					if(!SecurityUtils.canManageIssues(project))
+						return false;
 
 				for (String roleName: getAuthorizedRoles()) {
 					String fieldName = getFieldName(roleName);
