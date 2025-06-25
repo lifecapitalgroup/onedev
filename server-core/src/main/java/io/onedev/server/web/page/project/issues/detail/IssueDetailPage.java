@@ -10,7 +10,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
@@ -290,7 +289,7 @@ public abstract class IssueDetailPage extends ProjectIssuesPage implements Input
 					protected Component newDeleteLink(String componentId) {
 						if (!SecurityUtils.isAdministrator()) {
 							Session.get().error("You are unauthorized to delete issues.");
-							throw new UnauthorizedException();
+							return null;
 						}
 
 						return new Link<Void>(componentId) {

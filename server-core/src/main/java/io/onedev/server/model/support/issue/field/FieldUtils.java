@@ -30,7 +30,6 @@ import io.onedev.server.model.support.issue.field.spec.FieldSpec;
 import io.onedev.server.model.support.issue.field.spec.SecretField;
 import io.onedev.server.model.support.issue.field.instance.FieldInstance;
 import io.onedev.server.model.support.issue.field.instance.SpecifiedValue;
-import io.onedev.server.security.SecurityUtils;
 import io.onedev.server.util.ComponentContext;
 import io.onedev.server.util.EditContext;
 import io.onedev.server.web.editable.BeanDescriptor;
@@ -80,7 +79,7 @@ public class FieldUtils {
 	public static Collection<String> getEditablePropertyNames(Project project, Class<?> fieldBeanClass, Collection<String> fieldNames) {
 		BeanDescriptor descriptor = new BeanDescriptor(fieldBeanClass);
 		return fieldNames.stream()
-				.filter(it->SecurityUtils.canEditIssueField(project, it))
+				//.filter(it->SecurityUtils.canEditIssueField(project, it))
 				.map(it->getPropertyName(descriptor, it))
 				.filter(it->it!=null)
 				.collect(Collectors.toList());
@@ -88,7 +87,7 @@ public class FieldUtils {
 
 	public static Collection<String> getEditableFields(Project project, Collection<String> fieldNames) {
 		return fieldNames.stream()
-				.filter(it->SecurityUtils.canEditIssueField(project, it))
+				//.filter(it->SecurityUtils.canEditIssueField(project, it))
 				.collect(Collectors.toList());
 	}
 	
