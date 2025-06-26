@@ -38,7 +38,6 @@ import io.onedev.server.web.page.project.issues.list.ProjectIssueListPage;
 import io.onedev.server.web.util.ProjectAware;
 import io.onedev.server.web.util.WicketUtils;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -62,7 +61,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.onedev.server.search.entity.issue.IssueQueryLexer.*;
-import static io.onedev.server.security.SecurityUtils.canManageIssues;
 import static org.apache.wicket.ajax.attributes.CallbackParameter.explicit;
 
 abstract class BoardColumnPanel extends AbstractColumnPanel {
@@ -185,7 +183,7 @@ abstract class BoardColumnPanel extends AbstractColumnPanel {
 						CharSequence callback = ajaxBehavior.getCallbackFunction(
 								explicit("issueId"), explicit("cardIndex"));
 						String script = String.format("onedev.server.issueBoards.onColumnDomReady('%s', %s);", 
-								getMarkupId(), (getQuery() != null && canManageIssues(getProject()))? callback:"undefined");
+								getMarkupId(), callback);
 						// Use OnLoad instead of OnDomReady as otherwise perfect scrollbar is not shown unless resized 
 						response.render(OnDomReadyHeaderItem.forScript(script));
 					}
@@ -346,8 +344,8 @@ abstract class BoardColumnPanel extends AbstractColumnPanel {
 
 			@Override
 			protected void respond(AjaxRequestTarget target) {
-				if (!canManageIssues(getProject()))
-					throw new UnauthorizedException("Permission denied");
+				// if (!canManageIssues(getProject()))
+				// 	throw new UnauthorizedException("Permission denied");
 				
 				IRequestParameters params = RequestCycle.get().getRequest().getPostParameters();
 				var issueId = params.getParameterValue("issueId").toLong();
