@@ -635,6 +635,9 @@ public abstract class IssueListPanel extends Panel {
 							var colIndex = 0;
 							worksheet.value(0, colIndex++, "Number");
 							worksheet.value(0, colIndex++, "Title");
+							worksheet.value(0, colIndex++, "Description");
+							worksheet.value(0, colIndex++, "Submission date");
+							worksheet.value(0, colIndex++, "Last activity date");
 							
 							for (String field: getListFields()) {
 								worksheet.value(0, colIndex++, field);
@@ -661,6 +664,9 @@ public abstract class IssueListPanel extends Panel {
 								
 								worksheet.value(rowIndex, colIndex++, issue.getReference().toString(getProject()));
 								worksheet.value(rowIndex, colIndex++, issue.getTitle());
+								worksheet.value(rowIndex, colIndex++, issue.getDescription());
+								worksheet.value(rowIndex, colIndex++, issue.getSubmitDate().toString());
+								worksheet.value(rowIndex, colIndex++, issue.getLastActivity().getDate().toString());
 								
 								for (String field: getListFields()) {
 									if (field.equals(Issue.NAME_STATE)) {
@@ -713,6 +719,9 @@ public abstract class IssueListPanel extends Panel {
 							var headers = new ArrayList<String>();
 							headers.add("Number");
 							headers.add("Title");
+							headers.add("Description");
+							headers.add("Submission date");
+							headers.add("Last activity date");
 							headers.addAll(getListFields());
 							
 							var withTimeTracking = false;
@@ -737,6 +746,10 @@ public abstract class IssueListPanel extends Panel {
 								
 								row.add(issue.getReference().toString(getProject()));
 								row.add(issue.getTitle());
+
+								row.add(issue.getDescription());
+								row.add(issue.getSubmitDate().toString());
+								row.add(issue.getLastActivity().getDate().toString());
 								
 								for (String field: getListFields()) {
 									if (field.equals(Issue.NAME_STATE)) {
