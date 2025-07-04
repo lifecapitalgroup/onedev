@@ -240,7 +240,14 @@ public abstract class NewIssueEditor extends FormComponentPanel<Issue> implement
 		Collection<String> properties = FieldUtils.getEditablePropertyNames(getProject(), 
 				fieldBeanClass, fieldNames);
 		add(fieldEditor = new BeanContext(fieldBean.getClass(), properties, false)
-				.renderForEdit("fields", Model.of(fieldBean)));
+				.renderForEdit("fields", Model.of(fieldBean), getProject()));
+
+		for(var prop: properties) {
+			var descriptor = fieldEditor.getPropertyContext(prop).getDescriptor();
+			System.out.println(descriptor.getDisplayName());
+			if (!FieldUtils.issueManagementFilter(getProject(), descriptor.getDisplayName()))
+				descriptor.setPropertyHidden(true);
+		}
 		
 		var estimatedTimeEditBean = new EstimatedTimeEditBean();
 		add(estimatedTimeEditor = new BeanContext(EstimatedTimeEditBean.class)

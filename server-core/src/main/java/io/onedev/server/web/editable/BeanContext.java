@@ -3,6 +3,8 @@ package io.onedev.server.web.editable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -14,6 +16,8 @@ import com.google.common.collect.Sets;
 
 import io.onedev.commons.utils.ClassUtils;
 import io.onedev.server.annotation.Editable;
+import io.onedev.server.model.Project;
+import io.onedev.server.model.support.issue.field.FieldUtils;
 
 public class BeanContext implements Serializable {
 	
@@ -43,6 +47,19 @@ public class BeanContext implements Serializable {
 	public BeanEditor renderForEdit(String componentId, IModel<Serializable> model) {
 		checkBeanEditable();
 		return new BeanEditor(componentId, descriptor, model);
+	}
+
+	public BeanEditor renderForEdit(String componentId, IModel<Serializable> model, Project project) {
+		var editor = renderForEdit(componentId, model);
+
+		for (Map.Entry<String, List<PropertyDescriptor>> entry: descriptor.getProperties().entrySet()) {
+			for (var x: entry.getValue()) {
+				if(!FieldUtils.issueManagementFilter(project, x.getDisplayName()))
+					x.setPropertyHidden(true);
+			}
+		}
+
+		return editor;
 	}
 	
 	private void checkBeanEditable() {

@@ -1,6 +1,7 @@
 package io.onedev.server.model.support.issue.field;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import io.onedev.server.OneDev;
 import io.onedev.server.entitymanager.SettingManager;
 import io.onedev.server.model.Project;
@@ -28,10 +30,12 @@ import io.onedev.server.buildspecmodel.inputspec.InputSpec;
 import io.onedev.server.buildspecmodel.inputspec.SecretInput;
 import io.onedev.server.model.support.issue.field.spec.FieldSpec;
 import io.onedev.server.model.support.issue.field.spec.SecretField;
+import io.onedev.server.security.SecurityUtils;
 import io.onedev.server.model.support.issue.field.instance.FieldInstance;
 import io.onedev.server.model.support.issue.field.instance.SpecifiedValue;
 import io.onedev.server.util.ComponentContext;
 import io.onedev.server.util.EditContext;
+import io.onedev.server.web.component.issue.fieldvalues.FieldValuesPanel;
 import io.onedev.server.web.editable.BeanDescriptor;
 import io.onedev.server.web.editable.PropertyDescriptor;
 
@@ -75,12 +79,32 @@ public class FieldUtils {
 		return (Class<? extends Serializable>) FieldSpec.defineClass(FIELD_BEAN_CLASS_NAME, 
 				"Issue Fields", issueSetting.getFieldSpecs());
 	}
+
+	public static String[] NON_ISSUE_MANAGER_FIELDS = {
+		"Urgency",
+		"Assignee",
+		"المسئول"
+	};
+
+	public static boolean issueManagementFilter(Project project, String fieldName) {
+		if (project == null)
+			return true;
+
+		for (int i = 0; i < NON_ISSUE_MANAGER_FIELDS.length; ++i) {
+			if (fieldName.equals(NON_ISSUE_MANAGER_FIELDS[i])) {
+				if(!SecurityUtils.canManageIssues(project))
+					return false;
+			}
+		}
+		return true;
+	}
 	
 	public static Collection<String> getEditablePropertyNames(Project project, Class<?> fieldBeanClass, Collection<String> fieldNames) {
 		BeanDescriptor descriptor = new BeanDescriptor(fieldBeanClass);
 		return fieldNames.stream()
 				//.filter(it->SecurityUtils.canEditIssueField(project, it))
 				.map(it->getPropertyName(descriptor, it))
+				// .filter(it -> issueManagementFilter(project, it))
 				.filter(it->it!=null)
 				.collect(Collectors.toList());
 	}
@@ -88,6 +112,7 @@ public class FieldUtils {
 	public static Collection<String> getEditableFields(Project project, Collection<String> fieldNames) {
 		return fieldNames.stream()
 				//.filter(it->SecurityUtils.canEditIssueField(project, it))
+				// .filter(it -> issueManagementFilter(project, it))
 				.collect(Collectors.toList());
 	}
 	
