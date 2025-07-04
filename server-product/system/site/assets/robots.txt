@@ -6,22 +6,22 @@ Disallow: /*IFormSubmitListener*
 Disallow: /*IBehaviorListener*
 Disallow: /*ILinkListener*
 
-Allow: /~dashboards
+Disallow: /~dashboards
 
-Allow: /~projects
+Disallow: /~projects
 Disallow: /~projects/new
 Disallow: /~projects/import
 
-Allow: /~pulls
-Allow: /~issues
-Allow: /~login
+Disallow: /~pulls
+Disallow: /~issues
+Disallow: /~login
 
-Allow: /*/~pulls
+Disallow: /*/~pulls
 Disallow: /*/~pulls/new
 Disallow: /*/~pulls/*/changes
 Disallow: /*/~pulls/*/code-comments
 
-Allow: /*/~issues
+Disallow: /*/~issues
 Disallow: /*/~issues/new
 Disallow: /*/~issues/import
 Disallow: /*/~issues/*/commits
