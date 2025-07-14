@@ -375,7 +375,7 @@ abstract class BoardColumnPanel extends AbstractColumnPanel {
 						var transition = transitionRef.get();
 						for (String promptField : transition.getPromptFields()) {
 							FieldSpec fieldSpec = getIssueSetting().getFieldSpec(promptField);
-							if (fieldSpec != null && SecurityUtils.canEditIssueField(getProject(), fieldSpec.getName())) {
+							if (fieldSpec != null) {
 								Class<?> fieldBeanClass = FieldUtils.getFieldBeanClass();
 								Serializable fieldBean = issue.getFieldBean(fieldBeanClass, true);
 								if (FieldUtils.isFieldVisible(new BeanDescriptor(fieldBeanClass), fieldBean, promptField)) {
