@@ -131,11 +131,7 @@ public class DefaultUserManager extends BaseEntityManager<User> implements UserM
 		Preconditions.checkState(user.isNew());
 		if (user.isServiceAccount() && !subscriptionManager.isSubscriptionActive())
 			throw new NoSubscriptionException("Service account");
-		user.setName(user.getName()
-				.toLowerCase()
-				.replaceAll("\\.|\\s+", "")
-				.replaceAll("-+", "-")
-			);
+		user.setName(user.getName().toLowerCase());
 		dao.persist(user);
     }
     

@@ -545,15 +545,25 @@ public class User extends AbstractEntity implements AuthenticationInfo {
 		return !(Boolean) EditContext.get().getInputValue(PROP_SERVICE_ACCOUNT);
 	}
 
+	public static String transformName(String name) {
+		if (name.contains(" "))
+			return name
+					.toLowerCase()
+					.replaceAll("\\.|\\s+", "")
+					.replaceAll("-+", "-");
+
+		return name;
+	}
+
 	@Editable(name="Login Name", order=100)
 	@UserName
 	@NotEmpty
 	public String getName() {
-		return name;
+		return transformName(name);
 	}
 	
     public void setName(String name) {
-    	this.name = name;
+		this.name = transformName(name);
     }
 
 	/**
