@@ -197,12 +197,18 @@ public class CreateIssueAction extends PostBuildAction {
 	public void validateWith(BuildSpec buildSpec, Job job) {
 		super.validateWith(buildSpec, job);
 		
-		GlobalIssueSetting issueSetting = OneDev.getInstance(SettingManager.class).getIssueSetting();
-		try {
-			FieldUtils.validateFields(issueSetting.getFieldSpecMap(getFieldNames()), issueFields);
-		} catch (ValidationException e) {
-			throw new ValidationException("Error validating issue fields: " + e.getMessage());
-		}
+		/*
+		 * Disabling issue field validation for post-build action, due to new fields
+		 * added preventing issue creation jobs from running (e.g. checklists),
+		 * have to go through all issue creation post-build actions and ignore
+		 * the field manually.
+		 */
+		// GlobalIssueSetting issueSetting = OneDev.getInstance(SettingManager.class).getIssueSetting();
+		// try {
+		// 	FieldUtils.validateFields(issueSetting.getFieldSpecMap(getFieldNames()), issueFields);
+		// } catch (ValidationException e) {
+		// 	throw new ValidationException("Error validating issue fields: " + e.getMessage());
+		// }
 		
 	}
 
