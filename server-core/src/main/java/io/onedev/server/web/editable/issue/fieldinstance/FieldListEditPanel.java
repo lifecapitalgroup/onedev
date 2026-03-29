@@ -113,8 +113,8 @@ class FieldListEditPanel extends PropertyEditor<List<Serializable>> {
 						container.add(newValueEditor("value", property, field.getValueProvider()));
 						container.setDefaultModel(Model.of(field.getValueProvider().getClass()));
 					} else {
-						container.add(newValueEditor("value", property, newSpecifiedValueProvider(property)));
-						container.setDefaultModel(Model.of(SpecifiedValue.class));
+						container.add(newValueEditor("value", property, new IgnoreValue()));
+						container.setDefaultModel(Model.of(IgnoreValue.class));
 					}
 					
 					container.add(new Label("name", property.getDisplayName()));
