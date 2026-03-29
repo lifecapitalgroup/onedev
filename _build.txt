@@ -1,0 +1,4 @@
+- Change JDK version to 11.
+- ./run-build.sh to build and run.
+- ./run.sh to run pre-built binaries.
+- Admin user: elmalah:elmalah
