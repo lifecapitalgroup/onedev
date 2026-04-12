@@ -3,7 +3,7 @@
 # NOTE: to be run on the target server since the build is quite large.
 # The script pulls last changes and builds/deploys on the server.
 
-target_path="/var/www/onedev-lifecapital"
+target_path="/opt/onedev-lifecapital"
 ver="11.9.9"
 
 # build assumed on same machine

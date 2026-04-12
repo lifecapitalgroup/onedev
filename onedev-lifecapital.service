@@ -2,8 +2,8 @@
 Description=onedev-lifecapital
 
 [Service]
-WorkingDirectory=/var/www/onedev-lifecapital
-ExecStart=/var/www/onedev-lifecapital/bin/server.sh console
+WorkingDirectory=/opt/onedev-lifecapital
+ExecStart=/opt/onedev-lifecapital/bin/server.sh console
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
